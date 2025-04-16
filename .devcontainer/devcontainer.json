@@ -1,0 +1,15 @@
+{
+	"name": "My Container",
+	"build": {
+		"context": "..",
+		"dockerfile": "../Dockerfile"
+	},
+	"runArgs": [
+		"--gpus", "all"
+	],
+	"forwardPorts": [8888],
+	"extensions": [
+		"ms-python.python", 
+		"ms-toolsai.jupyter"
+	]
+}

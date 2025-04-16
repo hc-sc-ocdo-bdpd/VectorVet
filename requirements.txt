@@ -1,0 +1,12 @@
+Cython  
+numpy  
+scipy  
+pandas  
+isoscore  
+tqdm  
+ipywidgets
+matplotlib  
+torch  
+langchain
+ipykernal
+git+https://github.com/VarIr/scikit-hubness.git@main
