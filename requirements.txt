@@ -8,5 +8,5 @@ ipywidgets
 matplotlib  
 torch  
 langchain
-ipykernal
+ipykernel
 git+https://github.com/VarIr/scikit-hubness.git@main
