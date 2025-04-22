@@ -60,25 +60,44 @@ This notebook demonstrates end-to-end usage of VectorVet, from loading embedding
 
 ## 💡 Interpretation Guidelines  
   
-As a general rule of thumb, embeddings with good isotropy, minimal hubness, and clear clustering structure are likely to yield effective semantic search results. Embeddings that fail these checks should be reconsidered or post-processed (e.g., mean centering, whitening, hubness reduction).  
+Intrinsic metrics help you quickly diagnose embedding quality. While exact values depend somewhat on your dataset and embedding dimensionality, good embeddings typically exhibit:  
   
-Use the following guidelines to interpret your intrinsic metric scores:  
+- **Reasonable isotropy:** Embeddings utilize multiple directions in vector space rather than collapsing into a few dimensions.  
+- **Low hubness:** No embeddings disproportionately dominate nearest-neighbor queries.  
+- **Clear clustering structure:** Embeddings naturally form meaningful semantic clusters.  
+- **Balanced cosine similarity:** Embeddings are neither too similar (collapsing) nor too dissimilar (sparse).  
   
-| Metric                      | ✅ Good                    | ⚠️ Concerning              | 🚫 Poor                      |  
-|-----------------------------|----------------------------|----------------------------|------------------------------|  
-| **IsoScore**                | ≥ 0.3 (ideally ≥ 0.5)      | 0.1–0.3                    | < 0.1                        |  
-| **Hubness: Skewness**       | ≤ 1.5                      | 1.5–3.0                    | > 3.0                        |  
-| **Hubness: Robin Hood**     | ≤ 0.3                      | 0.3–0.5                    | > 0.5                        |  
-| **Clustering: Silhouette**  | ≥ 0.2 (ideally ≥ 0.3)      | 0.05–0.2                   | < 0.05                       |  
-| **Clustering: Davies-Bouldin**| ≤ 2.0 (ideally ≤ 1.5)    | 2.0–3.0                    | > 3.0                        |  
-| **Cosine Similarity (mean)**| Moderate (0.2–0.6)         | < 0.2 or 0.6–0.8           | > 0.8 (embeddings collapsing)|  
-| **Cosine Similarity (std)** | ≥ 0.15                     | 0.05–0.15                  | < 0.05 (little variation)    |  
+Use the following table as a practical starting point to interpret your results:  
   
-- **IsoScore**: Higher isotropy (≥ 0.3) is desirable. Values below 0.1 indicate embeddings overly concentrated in a few directions.  
-- **Hubness Metrics**: Lower skewness and Robin Hood index indicate fewer problematic "hub" embeddings. High values mean certain embeddings dominate as nearest neighbors, hurting semantic search.  
-- **Clustering Scores**: Embeddings should naturally form clear clusters. Higher silhouette scores and lower Davies-Bouldin indices indicate better separation.  
-- **Cosine Similarity**: Embeddings should neither be too similar (mean cosine similarity > 0.8 indicates collapsing) nor completely unrelated (mean cosine similarity < 0.2). A higher standard deviation (≥ 0.15) generally indicates healthier variation across embeddings.  
+| Metric                           | ✅ Good                         | ⚠️ Concerning                    | 🚫 Poor / Likely Problematic    |  
+|----------------------------------|---------------------------------|----------------------------------|---------------------------------|  
+| **Isotropy (IsoScore)**          | ≥ 0.01                          | 0.001–0.01                       | < 0.001                         |  
+| **Hubness: Skewness**            | ≤ 1.5                           | 1.5–2.5                          | > 2.5                           |  
+| **Hubness: Robin Hood Index**    | ≤ 0.25                          | 0.25–0.30                        | > 0.30                          |  
+| **Hubness: Antihub Rate**        | ~0.0 (ideal)                    | 0.0–0.05                         | > 0.05                          |  
+| **Clustering: Silhouette**       | ≥ 0.10                          | 0.05–0.10                        | < 0.05                          |  
+| **Clustering: Davies-Bouldin**   | ≤ 2.5                           | 2.5–3.5                          | > 3.5                           |  
+| **Cosine Similarity (Mean)**     | Moderate (0.3–0.7)              | Slightly Low (0.1–0.3) or Slightly High (0.7–0.8) | Very Low (<0.1) or Very High (>0.8) |  
+| **Cosine Similarity (Std Dev)**  | ≥ 0.20                          | 0.10–0.20                        | < 0.10                          |  
   
+### 📌 **Practical Interpretation Tips:**  
+  
+- **Isotropy (IsoScore)**:   
+  Most embedding models—even strong ones—often yield low isotropy scores. Scores ≥ 0.01 typically suggest relatively balanced embeddings. Very low isotropy scores (<0.001) indicate embeddings are concentrated in very few directions.  
+  
+- **Hubness Metrics**:   
+  Lower skewness and Robin Hood indices indicate healthier nearest-neighbor distributions. Scores significantly above recommended thresholds (e.g., skewness > 2.5, Robin Hood > 0.3) indicate problematic embeddings that dominate search results.  
+  
+- **Clustering Quality**:  
+  Intrinsic clustering metrics typically yield modest numeric values—even good embeddings often score around 0.05–0.10 for silhouette. Scores above these ranges are strong indicators of semantic coherence. Consistently low scores (<0.05 silhouette, >3.5 Davies-Bouldin) suggest embeddings with poor semantic structure.  
+  
+- **Cosine Similarity**:  
+  Mean cosine similarities between ~0.3 and ~0.7 usually reflect balanced embeddings. Values near extremes (<0.1 or >0.8) often indicate embedding collapse or excessive sparsity. A higher cosine similarity standard deviation (≥ 0.20) is desirable, reflecting a healthy embedding variation.  
+  
+### ⚠️ **Important Notes:**  
+  
+These thresholds are practical, heuristic guidelines derived from empirical observations. Actual optimal metric ranges can vary depending on your specific dataset, embedding dimensionality, and semantic domain. Always validate embedding quality through practical semantic search and retrieval tests with representative data.  
+
 ---  
   
 ## ⚠️ Caveats  
